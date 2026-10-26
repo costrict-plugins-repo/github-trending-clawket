@@ -1,0 +1,55 @@
+{
+  "name": "clawket",
+  "version": "3.3.0",
+  "description": "Structured task contracts for LLM coding agents — Claude Code plugin with local SQLite-backed task board + MCP RAG pull across sessions",
+  "author": {
+    "name": "Seungwoo Lee"
+  },
+  "license": "MIT",
+  "keywords": [
+    "task-management",
+    "work-dashboard",
+    "state-layer",
+    "project-management",
+    "mcp",
+    "rag"
+  ],
+  "skills": "./skills/",
+  "skillsList": [
+    {
+      "name": "clawket-dashboard",
+      "path": "skills/clawket-dashboard/SKILL.md",
+      "description": "Use when checking work status, starting or finishing tasks, or creating tasks in the Clawket work board. Shows the current plan / unit / cycle / task view for the working directory and routes start / done / new sub-commands through the lifecycle gates."
+    },
+    {
+      "name": "clawket-plan-design",
+      "path": "skills/clawket-plan-design/SKILL.md",
+      "description": "Use when designing a Clawket Plan + Units from authored scenarios — pins the Done proposition, decomposes scenarios into Units, declares the Unit dependency graph, and sets the convergence condition before any work begins."
+    },
+    {
+      "name": "clawket-scenario-author",
+      "path": "skills/clawket-scenario-author/SKILL.md",
+      "description": "Use when authoring atomic user scenarios for a new domain or menu area — produces per-domain spec knowledge in the strict As-a / I-want / So-that + Given/When/Then format."
+    },
+    {
+      "name": "clawket-verify-batch",
+      "path": "skills/clawket-verify-batch/SKILL.md",
+      "description": "Use during a verification round to dispatch sub-agent batches that reason scenarios against code, emit per-batch TSV evidence, then transcribe the TSV into Clawket tasks via a 16-worker ThreadPoolExecutor."
+    },
+    {
+      "name": "clawket-verify-loop",
+      "path": "skills/clawket-verify-loop/SKILL.md",
+      "description": "Use to run a verification round end-to-end — dispatch sub-agent batches, collect 7-field TSV evidence, transcribe into Clawket tasks, render the 3-way convergence judgment, and either schedule the next round or close the loop."
+    },
+    {
+      "name": "clawket-scenario-refine",
+      "path": "skills/clawket-scenario-refine/SKILL.md",
+      "description": "Use when a verification round reports scenario_error rows — decide atomic-split / intent-redefinition / deletion for each scenario, then update the spec knowledge and the audit trail."
+    },
+    {
+      "name": "clawket-defect-fix",
+      "path": "skills/clawket-defect-fix/SKILL.md",
+      "description": "Use when a verification round reports defect rows — register a fix task per defect under the defect-resolution plan's Round R Unit, apply the code change there (never in the QA plan), and verify the Done proposition is externally checkable."
+    }
+  ]
+}

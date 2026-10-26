@@ -1,0 +1,100 @@
+{
+  "schema_version": "v3",
+  "description": "Clawket work dashboard hooks (v3 — 7 standard Claude Code events + PostToolUse:ExitPlanMode matcher for plan-sync). Stop=run cleanup + opt-in auto-advance (migration 027: queries GET /continuation and injects the next task/phase via {decision:block,reason} when the active plan has auto_advance=1; guarded against infinite loops by a per-session marker file and CLAWKET_NO_AUTO_ADVANCE=1). PDD anti-pattern enforcement (X3 scenario_id / X7 batch>30 / X8 evidence NULL / X9 sync-Agent reasoning) is implemented in adapters/shared/claude-hooks.cjs (checkX3ScenarioId / checkX7BatchSize / checkX8Evidence / checkX9SyncReasoning) and routed via: PreToolUse=X3+X7+X8+X9, PostToolUse(Edit|Write)=X3, SubagentStart=X3+X7+X9, SubagentStop=X8. See adapters/claude/README.md.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/session-start.cjs\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/user-prompt-submit.cjs\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent|TeamCreate|SendMessage|Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/pre-tool-use.cjs\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/post-tool-use.cjs\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/plan-sync.cjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/subagent-start.cjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/subagent-stop.cjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/cache/clawket\"; node \"$_R/adapters/claude/stop.cjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
